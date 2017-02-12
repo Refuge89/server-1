@@ -206,12 +206,13 @@ void WorldSession::SendAuctionCancelledToBidderMail(AuctionEntry* auction)
     }
 }
 
+
 AuctionHouseEntry const* WorldSession::GetCheckedAuctionHouseForAuctioneer(ObjectGuid guid)
 {
     Unit* auctioneer;
 
-    // GM case
-    if (guid == GetPlayer()->GetObjectGuid())
+    // GM case    
+   /*  if (guid == GetPlayer()->GetObjectGuid())
     {
         // command case will return only if player have real access to command
         // using special access modes (1,-1) done at mode set in command, so not need recheck
@@ -224,19 +225,20 @@ AuctionHouseEntry const* WorldSession::GetCheckedAuctionHouseForAuctioneer(Objec
         auctioneer = GetPlayer();
     }
     // auctioneer case
-    else
-    {
-        auctioneer = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_AUCTIONEER);
+    else 
+    { */
+        auctioneer = GetPlayer(); //->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_AUCTIONEER);
         if (!auctioneer)
         {
             DEBUG_LOG("Auctioneer %s accessed in cheating way.", guid.GetString().c_str());
             return NULL;
         }
-    }
+    
 
     // always return pointer
     return AuctionHouseMgr::GetAuctionHouseEntry(auctioneer);
-}
+} 
+
 
 // this void creates new auction and adds auction to some auctionhouse
 void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
