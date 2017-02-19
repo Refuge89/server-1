@@ -22,52 +22,32 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-/** \addtogroup u2w User to World Communication
- *  @{
- *  \file WorldSocketMgr.h
- *  \author Derex <derex101@gmail.com>
- */
+#ifndef MANGOS_H_SOAPTHREAD
+#define MANGOS_H_SOAPTHREAD
 
-#ifndef MANGOS_H_WORLDSOCKETMGR
-#define MANGOS_H_WORLDSOCKETMGR
-
-#include <ace/Basic_Types.h>
-#include <ace/Singleton.h>
-#include <ace/TSS_T.h>
-#include <ace/INET_Addr.h>
 #include <ace/Task.h>
-#include <ace/Acceptor.h>
 
-class WorldSocket;
+#include "Common.h"
+#include "soapH.h"
 
-/// This is a pool of threads designed to be used by an ACE_TP_Reactor.
-/// Manages all sockets connected to peers
+class SoapPool;
 
-class WorldSocketMgr : public ACE_Task_Base
+class SoapThread: public ACE_Task_Base
 {
-    friend class ACE_Singleton<WorldSocketMgr, ACE_Thread_Mutex>;
-    friend class WorldSocket;
+    enum { SOAP_THREADS = 1 }; //TODO: configure in mangosd.conf
+
     public:
-        int StartNetwork(ACE_INET_Addr& addr);
-        void StopNetwork();
+        SoapThread(uint16 port, const char* host) : host_(host), port_(port), pool_(NULL) {}
+        virtual ~SoapThread();
+
+        virtual int svc() override;
+        virtual int open(void*) override;
 
     private:
-        int OnSocketOpen(WorldSocket* sock);
-        virtual int svc();
-
-        WorldSocketMgr();
-        virtual ~WorldSocketMgr();
-
-    private:
-        int m_SockOutKBuff;
-        int m_SockOutUBuff;
-        bool m_UseNoDelay;
-
-        ACE_Reactor   *reactor_;
-        WorldAcceptor *acceptor_;
+        const char   *host_;
+        uint16       port_;
+        SoapPool     *pool_;
+        struct soap  soap_;
 };
 
-#define sWorldSocketMgr ACE_Singleton<WorldSocketMgr, ACE_Thread_Mutex>::instance()
-
 #endif
-/// @}

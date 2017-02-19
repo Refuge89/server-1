@@ -2176,6 +2176,10 @@ class Player : public Unit
         /*********************************************************/
         float m_modManaRegen;
         float m_modManaRegenInterrupt;
+
+        float m_rageDecayRate;
+        float m_rageDecayMultiplier;
+
         float m_SpellCritPercentage[MAX_SPELL_SCHOOL];
         bool HasMovementFlag(MovementFlags f) const;        // for script access to m_movementInfo.HasMovementFlag
         void UpdateFallInformationIfNeed(MovementInfo const& minfo, uint16 opcode);
@@ -2196,6 +2200,7 @@ class Player : public Unit
         bool IsFlying() const { return false; }
         bool IsFreeFlying() const { return false; }
 
+        bool IsClientControl(Unit* target) const;
         void SetClientControl(Unit* target, uint8 allowMove);
         void SetMover(Unit* target) { m_mover = target ? target : this; }
         Unit* GetMover() const { return m_mover; }
