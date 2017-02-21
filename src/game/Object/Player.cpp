@@ -1,4 +1,4 @@
-/**
+/*
  * MaNGOS is a full featured server for World of Warcraft, supporting
  * the following clients: 1.12.x, 2.4.3, 3.3.5a, 4.3.4a and 5.4.8
  *
@@ -1928,14 +1928,8 @@ void Player::RewardRage(uint32 damage, bool attacker)
 
 void Player::RegenerateAll()
 {
-    if (
-        m_regenTimer != 0
-        || GetPower(POWER_RAGE) < 1
-        && GetPowerType() == POWER_RAGE
-        )
-    {
+    if (m_regenTimer != 0)
         return;
-    }
 
     // Not in combat or they have regeneration
     if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
@@ -2029,7 +2023,8 @@ void Player::RegenerateHealth()
     uint32 curValue = GetHealth();
     uint32 maxValue = GetMaxHealth();
 
-    if (curValue >= maxValue) { return; }
+    if (curValue >= maxValue)  
+        return; 
 
     float HealthIncreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_HEALTH);
 
