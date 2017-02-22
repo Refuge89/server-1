@@ -340,6 +340,18 @@ struct is_blackrock_spire : public InstanceScript
                 break;
             }
         }
+        void OnCreatureLooted(Creature* pCreature, LootType lootType)override
+        {
+            switch (pCreature->GetEntry())
+            {
+            case NPC_THE_BEAST:
+                if (lootType == LOOT_SKINNING)
+                {
+                    pCreature->CastSpell(pCreature, SPELL_FINKLE_IS_EINHORN, true);
+                }
+                break;
+            }
+        }
 
         void SetData(uint32 uiType, uint32 uiData) override
         {
