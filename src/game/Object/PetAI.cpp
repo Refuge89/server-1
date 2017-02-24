@@ -102,7 +102,16 @@ bool PetAI::_needToStop() const
 {
     // This is needed for charmed creatures, as once their target was reset other effects can trigger threat
     if (m_creature->IsCharmed() && m_creature->getVictim() == m_creature->GetCharmer())
-        { return true; }
+        return true;
+
+    // dont allow to follow targets out of visibility range
+     if (m_creature->GetDistance(m_creature->getVictim()) > m_creature->GetVisibility() - 5.0f)
+        return true; 
+
+     // dont allow pets to follow targets far away from owner
+     if (Unit* owner = m_creature->GetCharmerOrOwner())
+         if (owner->GetDistance(m_creature) >= (owner->GetVisibility() - 10.0f))
+             return true;
 
     return !m_creature->getVictim()->IsTargetableForAttack();
 }
@@ -142,15 +151,11 @@ void PetAI::UpdateAI(const uint32 diff)
     if (inCombat && (!m_creature->getVictim() || (m_creature->IsPet() && ((Pet*)m_creature)->GetModeFlags() & PET_MODE_DISABLE_ACTIONS)))
         { _stopAttack(); }
 
+
     // i_pet.getVictim() can't be used for check in case stop fighting, i_pet.getVictim() clear at Unit death etc.
     if (m_creature->getVictim())
     {
-        if (_needToStop())
-        {
-            DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "PetAI (guid = %u) is stopping attack.", m_creature->GetGUIDLow());
-            _stopAttack();
-            return;
-        }
+       
 
         bool meleeReach = m_creature->CanReachWithMeleeAttack(m_creature->getVictim());
 
@@ -175,6 +180,12 @@ void PetAI::UpdateAI(const uint32 diff)
 
                 if (_needToStop())
                     { _stopAttack(); }
+            }
+            if (_needToStop())
+            {
+                DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "PetAI (guid = %u) is stopping attack.", m_creature->GetGUIDLow());
+                _stopAttack();
+                return;
             }
         }
     }
