@@ -2191,6 +2191,13 @@ void Player::SetGameMaster(bool on)
         setFaction(35);
         SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
 
+        if (Pet* pet = GetPet())
+        {
+            if (m_ExtraFlags |= PLAYER_EXTRA_GM_ON)
+                pet->setFaction(35);
+            pet->GetHostileRefManager().setOnlineOfflineState(false);
+        }
+
         CallForAllControlledUnits(SetGameMasterOnHelper(), CONTROLLED_PET | CONTROLLED_TOTEMS | CONTROLLED_GUARDIANS | CONTROLLED_CHARM);
 
         SetFFAPvP(false);
@@ -2211,11 +2218,18 @@ void Player::SetGameMaster(bool on)
         if (sWorld.IsFFAPvPRealm())
             { SetFFAPvP(true); }
 
+        if (Pet* pet = GetPet())
+        {
+            pet->setFaction(getFaction());
+            pet->GetHostileRefManager().setOnlineOfflineState(true);
+        }
+
         // restore FFA PvP area state, remove not allowed for GM mounts
         UpdateArea(m_areaUpdateId);
 
         GetHostileRefManager().setOnlineOfflineState(true);
     }
+
 
     m_camera.UpdateVisibilityForOwner();
     UpdateObjectVisibility();
